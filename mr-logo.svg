@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d00"/>
+      <stop offset="100%" stop-color="#cc1a3a"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- BG -->
+  <rect width="512" height="512" rx="114" fill="url(#bg)"/>
+  <rect width="512" height="260" rx="114" fill="url(#shine)"/>
+
+  <!-- ═══════════════════════
+       LETTER M (bold, geometric)
+       starts x=54, top y=108
+  ═══════════════════════ -->
+  <!-- Left vertical stem -->
+  <rect x="54"  y="108" width="52" height="296" rx="8" fill="white"/>
+  <!-- Right vertical stem -->
+  <rect x="246" y="108" width="52" height="296" rx="8" fill="white"/>
+  <!-- Left diagonal (down-right) -->
+  <polygon points="54,108 106,108 186,240 134,240" fill="white"/>
+  <!-- Right diagonal (down-left) -->
+  <polygon points="246,108 298,108 218,240 166,240" fill="white"/>
+  <!-- Center V bottom fill -->
+  <polygon points="134,240 218,240 176,312" fill="white"/>
+
+  <!-- ═══════════════════════
+       LETTER R (bold, geometric)
+       starts x=328
+  ═══════════════════════ -->
+  <!-- Vertical stem -->
+  <rect x="328" y="108" width="52" height="296" rx="8" fill="white"/>
+  <!-- Top bump of R -->
+  <!-- Outer arc approximated with rects+polygon -->
+  <rect x="328" y="108" width="114" height="52" rx="8" fill="white"/>
+  <rect x="380" y="108" width="52" height="130" rx="0" fill="white"/>
+  <rect x="328" y="186" width="114" height="52" rx="8" fill="white"/>
+  <!-- Rounded cap on R bump -->
+  <ellipse cx="432" cy="160" rx="52" ry="52" fill="white"/>
+  <!-- Knock out inner circle of R bump -->
+  <ellipse cx="432" cy="160" rx="26" ry="26" fill="url(#bg)"/>
+  <!-- Diagonal leg of R -->
+  <polygon points="380,238 458,404 406,404 342,252" fill="white"/>
+
+  <!-- ═══════════════════════
+       ACCENT LINE bottom
+  ═══════════════════════ -->
+  <rect x="54" y="430" width="404" height="16" rx="8" fill="white" opacity="0.35"/>
+  <!-- Orange dot accent -->
+  <circle cx="256" cy="476" r="10" fill="white" opacity="0.5"/>
+
+</svg>
