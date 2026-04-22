@@ -1,0 +1,996 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Minha Rotina</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,900;1,900&family=Barlow+Condensed:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f4f0;--white:#fff;--ink:#0a0a0a;--muted:#888;--border:#e8e8e4;
+  --orange:#ff4d00;--blue:#0057ff;--green:#00b87a;--purple:#7c3aed;
+  --red:#e11d48;--amber:#f59e0b;--slate:#64748b;--pink:#ec4899;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:0}
+.app{max-width:430px;margin:0 auto;padding:0 20px 100px}
+.screen{display:none}.screen.on{display:block}
+
+/* ── HEADER ── */
+.hdr{padding:44px 0 22px;border-bottom:1.5px solid var(--ink);margin-bottom:22px}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start}
+.hdr-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.hdr-title{font-family:'Barlow Condensed',sans-serif;font-size:50px;font-weight:900;line-height:.9;text-transform:uppercase;letter-spacing:-1px}
+.hdr-title em{font-style:italic;color:var(--orange)}
+.hdr-right{display:flex;gap:8px;align-items:flex-start;flex-shrink:0}
+.hdr-tag{background:var(--ink);color:var(--white);padding:10px 13px;border-radius:12px;text-align:center}
+.hdr-tag .day{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;line-height:1;text-transform:uppercase}
+.hdr-tag .date{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* ── EDIT TOGGLE ── */
+.edit-toggle{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:8px 11px;font-size:11px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;font-family:'Barlow',sans-serif;cursor:pointer;color:var(--ink);transition:all .2s}
+.edit-toggle.on{background:var(--orange);border-color:var(--orange);color:#fff}
+
+/* ── PROGRESS ── */
+.big-prog{margin-bottom:20px}
+.bp-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.bp-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.bp-pct{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;line-height:1}
+.bp-bar{height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.bp-fill{height:100%;border-radius:99px;background:var(--ink);transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+/* ── DAY PILLS ── */
+.day-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:20px}
+.day-row::-webkit-scrollbar{display:none}
+.dp{flex-shrink:0;padding:6px 13px;border-radius:99px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;letter-spacing:.5px;cursor:pointer;transition:all .18s}
+.dp.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+
+/* ── MODULE TABS ── */
+.mod-tabs{display:flex;gap:0;background:var(--white);border-radius:14px;padding:4px;margin-bottom:20px;border:1.5px solid var(--border)}
+.mt{flex:1;padding:8px 4px;border-radius:10px;border:none;background:transparent;font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow',sans-serif;color:var(--muted);cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.mt span{font-size:16px}
+.mt.on{background:var(--ink);color:#fff}
+
+/* ── EDIT BAR ── */
+.edit-bar{display:flex;align-items:center;justify-content:space-between;background:var(--ink);color:var(--white);border-radius:12px;padding:10px 14px;margin-bottom:14px;opacity:0;pointer-events:none;transition:opacity .2s;height:0;overflow:hidden}
+.edit-bar.show{opacity:1;pointer-events:all;height:auto;margin-bottom:14px}
+.edit-bar-lbl{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.edit-done{background:var(--orange);color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow',sans-serif;cursor:pointer}
+
+/* ── MODULE CONTENT ── */
+.mod{display:none}.mod.on{display:block}
+
+/* ── BLOCKS (rotina) ── */
+.blocks{display:flex;flex-direction:column;gap:2px}
+.blk-outer{position:relative;overflow:hidden;border-radius:16px;margin-bottom:2px}
+.blk-del-bg{position:absolute;right:0;top:0;bottom:0;width:70px;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;border-radius:0 16px 16px 0;pointer-events:none;opacity:0;transition:opacity .2s}
+.blk-outer.swiped .blk-del-bg{opacity:1;pointer-events:all}
+.blk-outer.swiped .blk-inner{transform:translateX(-70px)}
+.blk-inner{display:flex;align-items:stretch;border-radius:16px;overflow:hidden;border:1.5px solid transparent;transition:transform .25s;background:var(--white)}
+.blk-inner.is-now{border-color:var(--ink)}
+.blk-inner.done-blk .blk-body{opacity:.4}
+.blk-inner.done-blk .blk-name{text-decoration:line-through}
+.blk-accent{width:4px;flex-shrink:0}
+.blk-body{flex:1;padding:13px 13px;display:flex;align-items:center;gap:11px}
+.blk-time{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--muted);width:42px;flex-shrink:0;letter-spacing:.3px}
+.blk-icon{font-size:19px;flex-shrink:0;width:24px;text-align:center}
+.blk-info{flex:1;min-width:0}
+.blk-name{font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk-desc{font-size:11px;color:var(--muted);margin-top:1px;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.blk-acts{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.blk-check{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s}
+.blk-check.done{background:var(--ink);border-color:var(--ink);color:#fff}
+.blk-edit-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted)}
+.is-editing .blk-edit-btn{display:flex}
+.is-editing .blk-check{display:none}
+.now-tag{font-size:9px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:2px 6px;border-radius:99px;background:var(--orange);color:#fff;margin-left:5px;animation:blink 2s infinite;display:inline-block}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.ac-treino{background:var(--orange)}.ac-jiu{background:var(--red)}.ac-trabalho{background:var(--blue)}.ac-estudo{background:var(--purple)}.ac-familia{background:var(--green)}.ac-alimenta{background:var(--amber)}.ac-sono{background:var(--slate)}.ac-lazer{background:var(--pink)}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.2deg)}}
+.is-editing .blk-outer{animation:shake .5s ease infinite}
+.is-editing .blk-outer:nth-child(even){animation-delay:.12s}
+
+/* ── ADD BTN ── */
+.add-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;margin-top:10px;border-radius:14px;border:1.5px dashed var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;transition:all .2s}
+.add-btn:hover{border-color:var(--orange);color:var(--orange);background:#fff8f5}
+
+/* ══════════════════════════════
+   TREINO MODULE
+══════════════════════════════ */
+.workout-day-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:16px}
+.workout-day-tabs::-webkit-scrollbar{display:none}
+.wdt{flex-shrink:0;padding:6px 13px;border-radius:99px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;cursor:pointer;transition:all .18s}
+.wdt.on{background:var(--orange);border-color:var(--orange);color:#fff}
+
+.workout-header{background:var(--orange);border-radius:16px;padding:16px 18px;margin-bottom:14px;color:#fff}
+.wh-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.7;margin-bottom:4px}
+.wh-name{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;line-height:1;text-transform:uppercase}
+.wh-sub{font-size:12px;opacity:.7;margin-top:4px}
+
+.exercise-list{display:flex;flex-direction:column;gap:8px}
+.ex-card{background:var(--white);border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid transparent;transition:all .2s}
+.ex-card.done-ex{opacity:.5}
+.ex-card.done-ex .ex-name{text-decoration:line-through}
+.ex-num{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--orange);width:28px;flex-shrink:0;text-align:center}
+.ex-info{flex:1;min-width:0}
+.ex-name{font-size:14px;font-weight:700;line-height:1.2}
+.ex-meta{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+.ex-check{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s}
+.ex-check.done{background:var(--orange);border-color:var(--orange);color:#fff}
+.ex-edit-btn{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:none;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--muted)}
+.is-editing .ex-edit-btn{display:flex}
+.is-editing .ex-check{display:none}
+.is-editing .ex-card{animation:shake .5s ease infinite}
+.is-editing .ex-card:nth-child(even){animation-delay:.12s}
+
+.workout-progress{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:12px;padding:12px 16px;margin-bottom:14px}
+.wp-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);flex:1}
+.wp-count{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;color:var(--orange)}
+.wp-bar-wrap{flex:2;height:6px;background:var(--border);border-radius:99px;overflow:hidden}
+.wp-bar-fill{height:100%;background:var(--orange);border-radius:99px;transition:width .5s ease}
+
+/* ══════════════════════════════
+   TRABALHO MODULE
+══════════════════════════════ */
+.task-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.ts-chip{background:var(--white);border-radius:12px;padding:12px 8px;text-align:center;border:1.5px solid var(--border)}
+.ts-val{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;line-height:1}
+.ts-lbl{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.5px;margin-top:3px}
+
+.task-filters{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.task-filters::-webkit-scrollbar{display:none}
+.tf{flex-shrink:0;padding:5px 12px;border-radius:99px;border:1.5px solid var(--border);background:transparent;font-size:11px;font-weight:700;font-family:'Barlow',sans-serif;color:var(--muted);cursor:pointer;transition:all .15s}
+.tf.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+.task-list{display:flex;flex-direction:column;gap:6px}
+.task-card{background:var(--white);border-radius:14px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;border-left:4px solid transparent;transition:all .2s}
+.task-card.done-task{opacity:.5}
+.task-card.done-task .task-name{text-decoration:line-through}
+.task-card.pri-alta{border-left-color:var(--red)}
+.task-card.pri-media{border-left-color:var(--amber)}
+.task-card.pri-baixa{border-left-color:var(--green)}
+.task-check{width:22px;height:22px;border-radius:6px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;cursor:pointer;flex-shrink:0;margin-top:1px;transition:all .2s}
+.task-check.done{background:var(--blue);border-color:var(--blue);color:#fff}
+.task-info{flex:1;min-width:0}
+.task-name{font-size:14px;font-weight:700;line-height:1.3}
+.task-meta{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.task-tag{font-size:10px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:99px}
+.task-time{font-size:11px;color:var(--muted);font-weight:600}
+.task-edit-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted);flex-shrink:0}
+.is-editing .task-edit-btn{display:flex}
+.is-editing .task-card{animation:shake .5s ease infinite}
+.is-editing .task-card:nth-child(even){animation-delay:.12s}
+
+/* ══════════════════════════════
+   ESTUDOS MODULE
+══════════════════════════════ */
+.study-header{background:var(--purple);border-radius:16px;padding:16px 18px;margin-bottom:14px;color:#fff}
+.study-progress-ring{display:flex;align-items:center;gap:16px}
+.ring-wrap{position:relative;width:60px;height:60px;flex-shrink:0}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:rgba(255,255,255,.2);stroke-width:5}
+.ring-fill{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#fff}
+.sh-name{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:900;line-height:1;text-transform:uppercase}
+.sh-sub{font-size:12px;opacity:.7;margin-top:4px}
+
+.study-list{display:flex;flex-direction:column;gap:8px}
+.study-card{background:var(--white);border-radius:14px;padding:14px 16px;border:1.5px solid transparent;transition:all .2s}
+.study-card.done-study .sc-name{text-decoration:line-through;opacity:.5}
+.sc-top{display:flex;align-items:flex-start;gap:10px}
+.sc-check{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s}
+.sc-check.done{background:var(--purple);border-color:var(--purple);color:#fff}
+.sc-info{flex:1}
+.sc-name{font-size:14px;font-weight:700;line-height:1.3}
+.sc-meta{font-size:11px;color:var(--muted);margin-top:3px;font-weight:500}
+.sc-bar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:10px}
+.sc-bar-fill{height:100%;background:var(--purple);border-radius:99px;transition:width .5s}
+.sc-edit-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:none;align-items:center;justify-content:center;font-size:12px;cursor:pointer;color:var(--muted);flex-shrink:0}
+.is-editing .sc-edit-btn{display:flex}
+.is-editing .study-card{animation:shake .5s ease infinite}
+.is-editing .study-card:nth-child(even){animation-delay:.12s}
+
+/* ══════════════════════════════
+   LAZER MODULE
+══════════════════════════════ */
+.lazer-header{background:linear-gradient(135deg,var(--green),var(--blue));border-radius:16px;padding:16px 18px;margin-bottom:14px;color:#fff}
+.lh-title{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;text-transform:uppercase;line-height:1}
+.lh-sub{font-size:12px;opacity:.7;margin-top:4px}
+
+.lazer-list{display:flex;flex-direction:column;gap:8px}
+.lazer-card{background:var(--white);border-radius:14px;overflow:hidden;border:1.5px solid transparent;transition:all .2s}
+.lc-top{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.lc-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.lc-info{flex:1}
+.lc-name{font-size:14px;font-weight:700}
+.lc-meta{font-size:11px;color:var(--muted);margin-top:2px;font-weight:500}
+.lc-check{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;cursor:pointer;flex-shrink:0;transition:all .2s}
+.lc-check.done{background:var(--green);border-color:var(--green);color:#fff}
+.lc-edit-btn{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:transparent;display:none;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--muted);flex-shrink:0}
+.is-editing .lc-edit-btn{display:flex}
+.is-editing .lc-check{display:none}
+.is-editing .lazer-card{animation:shake .5s ease infinite}
+.is-editing .lazer-card:nth-child(even){animation-delay:.12s}
+.lazer-card.done-lazer .lc-name{text-decoration:line-through;opacity:.5}
+
+/* ── SEC LABEL ── */
+.sec-lbl{font-size:10px;font-weight:900;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin:22px 0 12px;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ══════════════════════════════
+   SEMANA / METAS
+══════════════════════════════ */
+.pillar-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.pillar{border-radius:18px;padding:18px 16px;border:1.5px solid transparent}
+.p-icon{font-size:30px;margin-bottom:8px;display:block}
+.p-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;text-transform:uppercase;line-height:1}
+.p-sub{font-size:11px;margin-top:3px;font-weight:500;opacity:.7}
+.p-treino{background:#fff0eb;border-color:#ffd5c2}.p-trabalho{background:#ebf0ff;border-color:#c2d2ff}
+.p-estudo{background:#f2ebff;border-color:#d8c2ff}.p-familia{background:#ebfff7;border-color:#c2ffe0}
+.meta-row{background:var(--white);border-radius:14px;padding:16px;margin-bottom:8px}
+.mr-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mr-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.mr-name{font-size:14px;font-weight:700;flex:1}
+.mr-val{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900}
+.mr-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:7px}
+.mr-fill{height:100%;border-radius:99px;transition:width .6s}
+.mr-foot{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:600}
+.week-cols{display:flex;gap:5px;margin-bottom:22px}
+.wk-col{flex:1;background:var(--white);border-radius:12px;padding:9px 3px;text-align:center;border:1.5px solid transparent}
+.wk-col.wk-today{border-color:var(--orange);background:#fff8f5}
+.wk-n{font-size:8px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.wk-d{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;margin:2px 0}
+.wk-dots{display:flex;flex-direction:column;gap:3px;align-items:center;margin-top:4px}
+.wk-dot{width:5px;height:5px;border-radius:50%}
+.focus-list{display:flex;flex-direction:column;gap:7px}
+.focus-item{background:var(--white);border-radius:13px;padding:13px 15px;display:flex;align-items:center;gap:10px}
+.fi-bar{width:3px;height:34px;border-radius:99px;flex-shrink:0}
+.fi-text{flex:1;font-size:13px;font-weight:600;line-height:1.4}
+.fi-tag{font-size:9px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:99px;flex-shrink:0}
+.quote{background:var(--ink);color:var(--white);border-radius:18px;padding:22px;margin-bottom:24px;position:relative;overflow:hidden}
+.quote::before{content:'"';position:absolute;top:-16px;right:12px;font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;color:rgba(255,255,255,.05);line-height:1}
+.q-text{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;line-height:1.3;position:relative}
+.q-auth{font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;font-weight:600;position:relative}
+
+/* ══════════════════════════════
+   MODALS
+══════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--white);border-radius:24px 24px 0 0;padding:28px 22px 44px;width:100%;max-width:430px;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:90vh;overflow-y:auto}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:99px;margin:0 auto 20px}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:900;text-transform:uppercase;margin-bottom:20px;letter-spacing:-.5px}
+.modal-title em{font-style:italic;color:var(--orange)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border-radius:11px;border:1.5px solid var(--border);background:var(--bg);font-size:14px;font-weight:600;font-family:'Barlow',sans-serif;color:var(--ink);outline:none;transition:border .2s;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink)}
+.field textarea{resize:none;height:65px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.emoji-grid{display:flex;flex-wrap:wrap;gap:6px}
+.emoji-opt{width:40px;height:40px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.emoji-opt.sel{border-color:var(--ink);background:var(--white);box-shadow:0 0 0 2px var(--ink)}
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cat-opt{padding:7px 4px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);font-size:10px;font-weight:700;text-align:center;cursor:pointer;transition:all .15s;color:var(--muted)}
+.cat-opt.sel{color:#fff;border-color:transparent}
+.co-treino.sel{background:var(--orange)}.co-jiu.sel{background:var(--red)}.co-trabalho.sel{background:var(--blue)}.co-estudo.sel{background:var(--purple)}.co-familia.sel{background:var(--green)}.co-alimenta.sel{background:var(--amber)}.co-sono.sel{background:var(--slate)}.co-lazer.sel{background:var(--pink)}
+.pri-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.pri-opt{padding:9px 4px;border-radius:9px;border:1.5px solid var(--border);background:var(--bg);font-size:11px;font-weight:800;text-align:center;cursor:pointer;transition:all .15s;color:var(--muted);letter-spacing:.3px}
+.pri-opt.sel{color:#fff;border-color:transparent}
+.pri-alta.sel{background:var(--red)}.pri-media.sel{background:var(--amber)}.pri-baixa.sel{background:var(--green)}
+.modal-btns{display:flex;gap:8px;margin-top:20px}
+.btn-cancel{flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--border);background:transparent;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow',sans-serif;cursor:pointer;color:var(--muted)}
+.btn-save{flex:2;padding:13px;border-radius:11px;border:none;background:var(--ink);color:#fff;font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow',sans-serif;cursor:pointer}
+.btn-delete{flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--red);background:transparent;color:var(--red);font-size:12px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;font-family:'Barlow',sans-serif;cursor:pointer}
+
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(245,244,240,.96);backdrop-filter:blur(16px);border-top:1.5px solid var(--border);display:flex;z-index:100}
+.nb{flex:1;padding:10px 0 14px;background:none;border:none;color:var(--muted);font-size:9px;font-weight:700;font-family:'Barlow',sans-serif;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s}
+.nb.on{color:var(--ink)}
+.nb svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.blk-outer,.ex-card,.task-card,.study-card,.lazer-card{animation:up .3s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════════════════════════
+     SCREEN: HOJE
+══════════════════════════════ -->
+<div class="screen on" id="scr-hoje">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div>
+        <div class="hdr-label" id="greeting">Bom dia</div>
+        <div class="hdr-title">Minha<br><em>Rotina</em></div>
+      </div>
+      <div class="hdr-right">
+        <button class="edit-toggle" id="edit-toggle" onclick="toggleEdit()">✏️ Editar</button>
+        <div class="hdr-tag"><div class="day" id="hdr-day">SEG</div><div class="date" id="hdr-date">21/04</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Module tabs -->
+  <div class="mod-tabs">
+    <button class="mt on" id="mt-rotina" onclick="switchMod('rotina')"><span>📅</span>Rotina</button>
+    <button class="mt" id="mt-treino" onclick="switchMod('treino')"><span>🏋️</span>Treino</button>
+    <button class="mt" id="mt-trabalho" onclick="switchMod('trabalho')"><span>💼</span>Trab.</button>
+    <button class="mt" id="mt-estudo" onclick="switchMod('estudo')"><span>📚</span>Estudo</button>
+    <button class="mt" id="mt-lazer" onclick="switchMod('lazer')"><span>🎮</span>Lazer</button>
+  </div>
+
+  <!-- Edit bar -->
+  <div class="edit-bar" id="edit-bar">
+    <span class="edit-bar-lbl">✏️ Modo edição</span>
+    <button class="edit-done" onclick="toggleEdit()">Concluir</button>
+  </div>
+
+  <!-- ── MOD: ROTINA ── -->
+  <div class="mod on" id="mod-rotina">
+    <div class="big-prog">
+      <div class="bp-top"><span class="bp-label">Progresso do dia</span><span class="bp-pct" id="bp-pct">0%</span></div>
+      <div class="bp-bar"><div class="bp-fill" id="bp-fill" style="width:0%"></div></div>
+    </div>
+    <div class="day-row" id="day-row"></div>
+    <div class="blocks" id="blocks"></div>
+    <button class="add-btn" id="add-rotina-btn" style="display:none" onclick="openModal('rotina')">＋ Adicionar bloco</button>
+  </div>
+
+  <!-- ── MOD: TREINO ── -->
+  <div class="mod" id="mod-treino">
+    <div class="workout-day-tabs" id="workout-day-tabs"></div>
+    <div id="workout-header-wrap"></div>
+    <div class="workout-progress">
+      <span class="wp-label">Exercícios</span>
+      <span class="wp-count" id="wp-count">0/0</span>
+      <div class="wp-bar-wrap"><div class="wp-bar-fill" id="wp-bar" style="width:0%"></div></div>
+    </div>
+    <div class="exercise-list" id="exercise-list"></div>
+    <button class="add-btn" id="add-ex-btn" style="display:none" onclick="openModal('exercicio')">＋ Adicionar exercício</button>
+  </div>
+
+  <!-- ── MOD: TRABALHO ── -->
+  <div class="mod" id="mod-trabalho">
+    <div class="task-summary">
+      <div class="ts-chip"><div class="ts-val" id="ts-total" style="color:var(--blue)">0</div><div class="ts-lbl">Total</div></div>
+      <div class="ts-chip"><div class="ts-val" id="ts-done" style="color:var(--green)">0</div><div class="ts-lbl">Feitas</div></div>
+      <div class="ts-chip"><div class="ts-val" id="ts-alta" style="color:var(--red)">0</div><div class="ts-lbl">Urgentes</div></div>
+    </div>
+    <div class="task-filters">
+      <button class="tf on" data-filter="todas" onclick="filterTasks('todas',this)">Todas</button>
+      <button class="tf" data-filter="alta" onclick="filterTasks('alta',this)">🔴 Urgente</button>
+      <button class="tf" data-filter="media" onclick="filterTasks('media',this)">🟡 Normal</button>
+      <button class="tf" data-filter="baixa" onclick="filterTasks('baixa',this)">🟢 Baixa</button>
+      <button class="tf" data-filter="pendente" onclick="filterTasks('pendente',this)">⏳ Pendentes</button>
+    </div>
+    <div class="task-list" id="task-list"></div>
+    <button class="add-btn" id="add-task-btn" style="display:none" onclick="openModal('tarefa')">＋ Adicionar tarefa</button>
+  </div>
+
+  <!-- ── MOD: ESTUDO ── -->
+  <div class="mod" id="mod-estudo">
+    <div class="study-header">
+      <div class="study-progress-ring">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 60 60" width="60" height="60">
+            <circle class="ring-bg" cx="30" cy="30" r="25"/>
+            <circle class="ring-fill" id="study-ring" cx="30" cy="30" r="25" stroke-dasharray="157" stroke-dashoffset="157"/>
+          </svg>
+          <div class="ring-txt" id="study-ring-txt">0%</div>
+        </div>
+        <div>
+          <div class="sh-name">Estudos<br>Profissionais</div>
+          <div class="sh-sub" id="study-sub">0 de 0 módulos</div>
+        </div>
+      </div>
+    </div>
+    <div class="study-list" id="study-list"></div>
+    <button class="add-btn" id="add-study-btn" style="display:none" onclick="openModal('estudo')">＋ Adicionar módulo</button>
+  </div>
+
+  <!-- ── MOD: LAZER ── -->
+  <div class="mod" id="mod-lazer">
+    <div class="lazer-header">
+      <div class="lh-title">Família &<br>Lazer</div>
+      <div class="lh-sub">Tempo de qualidade · recarrega tudo</div>
+    </div>
+    <div class="lazer-list" id="lazer-list"></div>
+    <button class="add-btn" id="add-lazer-btn" style="display:none" onclick="openModal('lazer')">＋ Adicionar atividade</button>
+  </div>
+
+</div><!-- /hoje -->
+
+<!-- ══════════════════════════════
+     SCREEN: SEMANA
+══════════════════════════════ -->
+<div class="screen" id="scr-semana">
+  <div class="hdr"><div class="hdr-label">Visão geral</div><div class="hdr-title">Esta<br><em>Semana</em></div></div>
+  <div class="week-cols" id="week-cols"></div>
+  <div class="sec-lbl">Foco desta semana</div>
+  <div class="focus-list">
+    <div class="focus-item"><div class="fi-bar" style="background:var(--orange)"></div><div class="fi-text">Não faltar nenhum treino da academia</div><div class="fi-tag" style="background:#fff0eb;color:var(--orange)">TOP 1</div></div>
+    <div class="focus-item"><div class="fi-bar" style="background:var(--purple)"></div><div class="fi-text">Completar 4h de estudo profissional</div><div class="fi-tag" style="background:#f2ebff;color:var(--purple)">META</div></div>
+    <div class="focus-item"><div class="fi-bar" style="background:var(--green)"></div><div class="fi-text">Celular no silêncio no horário da família</div><div class="fi-tag" style="background:#ebfff7;color:var(--green)">HÁBITO</div></div>
+    <div class="focus-item"><div class="fi-bar" style="background:var(--blue)"></div><div class="fi-text">Usar dias de extra para zerar pendências</div><div class="fi-tag" style="background:#ebf0ff;color:var(--blue)">CONTROLE</div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SCREEN: METAS
+══════════════════════════════ -->
+<div class="screen" id="scr-metas">
+  <div class="hdr"><div class="hdr-label">Seus pilares</div><div class="hdr-title">Metas &<br><em>Objetivos</em></div></div>
+  <div class="quote"><div class="q-text" id="q-text">Disciplina é a ponte entre metas e conquistas.</div><div class="q-auth" id="q-auth">— Jim Rohn</div></div>
+  <div class="pillar-grid">
+    <div class="pillar p-treino"><span class="p-icon">🏋️</span><div class="p-name">Treino</div><div class="p-sub">Academia 5× + Jiu 3×</div></div>
+    <div class="pillar p-trabalho"><span class="p-icon">💼</span><div class="p-name">Trabalho</div><div class="p-sub">08h50 → 18h + extra</div></div>
+    <div class="pillar p-estudo"><span class="p-icon">📚</span><div class="p-name">Estudos</div><div class="p-sub">2× semana · 2h cada</div></div>
+    <div class="pillar p-familia"><span class="p-icon">👨‍👩‍👧</span><div class="p-name">Família</div><div class="p-sub">Todo dia · 21h30+</div></div>
+  </div>
+  <div class="sec-lbl">Desempenho semanal</div>
+  <div class="meta-row"><div class="mr-top"><div class="mr-dot" style="background:var(--orange)"></div><div class="mr-name">Academia</div><div class="mr-val" style="color:var(--orange)">4/5</div></div><div class="mr-bar"><div class="mr-fill" style="width:80%;background:var(--orange)"></div></div><div class="mr-foot"><span>Seg a Sex · 06h</span><span>80%</span></div></div>
+  <div class="meta-row"><div class="mr-top"><div class="mr-dot" style="background:var(--red)"></div><div class="mr-name">Jiu-Jitsu</div><div class="mr-val" style="color:var(--red)">2/3</div></div><div class="mr-bar"><div class="mr-fill" style="width:67%;background:var(--red)"></div></div><div class="mr-foot"><span>Seg, Qua e Sex</span><span>67%</span></div></div>
+  <div class="meta-row"><div class="mr-top"><div class="mr-dot" style="background:var(--purple)"></div><div class="mr-name">Estudos</div><div class="mr-val" style="color:var(--purple)">1/2</div></div><div class="mr-bar"><div class="mr-fill" style="width:50%;background:var(--purple)"></div></div><div class="mr-foot"><span>Ter e Qui · 18h</span><span>50%</span></div></div>
+  <div class="meta-row"><div class="mr-top"><div class="mr-dot" style="background:var(--green)"></div><div class="mr-name">Família</div><div class="mr-val" style="color:var(--green)">7/7</div></div><div class="mr-bar"><div class="mr-fill" style="width:100%;background:var(--green)"></div></div><div class="mr-foot"><span>Todo dia · 21h30+</span><span>100% 🔥</span></div></div>
+</div>
+
+</div><!-- /app -->
+
+<!-- ══════════════════════════════
+     MODAL (universal)
+══════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Novo <em>Item</em></div>
+    <div id="modal-body"></div>
+    <div class="modal-btns" id="modal-btns"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nb on" id="nb-hoje" onclick="go('hoje')">
+    <svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>Hoje
+  </button>
+  <button class="nb" id="nb-semana" onclick="go('semana')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Semana
+  </button>
+  <button class="nb" id="nb-metas" onclick="go('metas')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>Metas
+  </button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════
+const DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DFULL=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const QUOTES=[
+  {t:'Disciplina é a ponte entre metas e conquistas.',a:'Jim Rohn'},
+  {t:'Não espere circunstâncias perfeitas. Comece agora.',a:'Napoleon Hill'},
+  {t:'O sucesso é a soma de pequenos esforços repetidos.',a:'Robert Collier'},
+  {t:'Treinar quando não quer é o que te separa dos outros.',a:'Kobe Bryant'},
+  {t:'A família é o seu porto. Proteja esse tempo.',a:'Anônimo'},
+];
+const EMOJIS=['⏰','🏋️','🥋','💼','📚','🍳','🥗','🍌','🚪','👨‍👩‍👧','🌙','☀️','😴','🚿','🧘','🏃','🎯','📝','💡','☕','🥤','💊','🚗','🎮','🎵','🎬','🏖','⚽','🃏','📱'];
+const catColors={treino:'var(--orange)',jiu:'var(--red)',trabalho:'var(--blue)',estudo:'var(--purple)',familia:'var(--green)',alimenta:'var(--amber)',sono:'var(--slate)',lazer:'var(--pink)'};
+
+// ═══════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════
+const DEF_ROTINA={
+  0:[{h:'08:00',e:'😴',n:'Descanso total',d:'Corpo e mente precisam disso',c:'sono'},{h:'10:00',e:'🍳',n:'Café da manhã',d:'Em família',c:'alimenta'},{h:'11:00',e:'👨‍👩‍👧',n:'Família & lazer',d:'Recarrega para a semana',c:'familia'}],
+  1:[{h:'05:30',e:'⏰',n:'Acordar',d:'Hidrate-se',c:'sono'},{h:'06:00',e:'🏋️',n:'Academia',d:'Treino de força',c:'treino'},{h:'07:30',e:'🍳',n:'Café da manhã',d:'Pós-treino',c:'alimenta'},{h:'08:50',e:'💼',n:'Trabalho',d:'Foco profundo',c:'trabalho'},{h:'12:00',e:'🥗',n:'Almoço',d:'Pausa estratégica',c:'alimenta'},{h:'16:00',e:'🍌',n:'Lanche',d:'Energia para o Jiu',c:'alimenta'},{h:'18:00',e:'🚪',n:'Saída do trabalho',d:'Desconecte agora',c:'trabalho'},{h:'20:00',e:'🥋',n:'Jiu-Jitsu',d:'Evolução técnica',c:'jiu'},{h:'21:30',e:'👨‍👩‍👧',n:'Família',d:'Presença total',c:'familia'},{h:'00:00',e:'🌙',n:'Dormir',d:'Recuperação',c:'sono'}],
+  2:[{h:'05:30',e:'⏰',n:'Acordar',d:'Hidrate-se',c:'sono'},{h:'06:00',e:'🏋️',n:'Academia',d:'Treino de força',c:'treino'},{h:'07:30',e:'🍳',n:'Café da manhã',d:'Pós-treino',c:'alimenta'},{h:'08:50',e:'💼',n:'Trabalho',d:'Foco profundo',c:'trabalho'},{h:'12:00',e:'🥗',n:'Almoço',d:'Pausa estratégica',c:'alimenta'},{h:'16:00',e:'🍌',n:'Lanche',d:'Energia para o estudo',c:'alimenta'},{h:'18:00',e:'📚',n:'Estudo / Extra',d:'2h sagradas',c:'estudo'},{h:'20:00',e:'👨‍👩‍👧',n:'Família',d:'Presença total',c:'familia'},{h:'00:00',e:'🌙',n:'Dormir',d:'Recuperação',c:'sono'}],
+  3:[{h:'05:30',e:'⏰',n:'Acordar',d:'Hidrate-se',c:'sono'},{h:'06:00',e:'🏋️',n:'Academia',d:'Treino de força',c:'treino'},{h:'07:30',e:'🍳',n:'Café da manhã',d:'Pós-treino',c:'alimenta'},{h:'08:50',e:'💼',n:'Trabalho',d:'Foco profundo',c:'trabalho'},{h:'12:00',e:'🥗',n:'Almoço',d:'Pausa estratégica',c:'alimenta'},{h:'16:00',e:'🍌',n:'Lanche',d:'Energia para o Jiu',c:'alimenta'},{h:'18:00',e:'🚪',n:'Saída do trabalho',d:'Desconecte agora',c:'trabalho'},{h:'20:00',e:'🥋',n:'Jiu-Jitsu',d:'Evolução técnica',c:'jiu'},{h:'21:30',e:'👨‍👩‍👧',n:'Família',d:'Presença total',c:'familia'},{h:'00:00',e:'🌙',n:'Dormir',d:'Recuperação',c:'sono'}],
+  4:[{h:'05:30',e:'⏰',n:'Acordar',d:'Hidrate-se',c:'sono'},{h:'06:00',e:'🏋️',n:'Academia',d:'Treino de força',c:'treino'},{h:'07:30',e:'🍳',n:'Café da manhã',d:'Pós-treino',c:'alimenta'},{h:'08:50',e:'💼',n:'Trabalho',d:'Foco profundo',c:'trabalho'},{h:'12:00',e:'🥗',n:'Almoço',d:'Pausa estratégica',c:'alimenta'},{h:'16:00',e:'🍌',n:'Lanche',d:'Energia para o estudo',c:'alimenta'},{h:'18:00',e:'📚',n:'Estudo / Extra',d:'2h sagradas',c:'estudo'},{h:'20:00',e:'👨‍👩‍👧',n:'Família',d:'Presença total',c:'familia'},{h:'00:00',e:'🌙',n:'Dormir',d:'Recuperação',c:'sono'}],
+  5:[{h:'05:30',e:'⏰',n:'Acordar',d:'Hidrate-se',c:'sono'},{h:'06:00',e:'🏋️',n:'Academia',d:'Treino de força',c:'treino'},{h:'07:30',e:'🍳',n:'Café da manhã',d:'Pós-treino',c:'alimenta'},{h:'08:50',e:'💼',n:'Trabalho',d:'Foco profundo',c:'trabalho'},{h:'12:00',e:'🥗',n:'Almoço',d:'Pausa estratégica',c:'alimenta'},{h:'16:00',e:'🍌',n:'Lanche',d:'Energia para o Jiu',c:'alimenta'},{h:'18:00',e:'🚪',n:'Saída do trabalho',d:'Desconecte agora',c:'trabalho'},{h:'20:00',e:'🥋',n:'Jiu-Jitsu',d:'Evolução técnica',c:'jiu'},{h:'21:30',e:'👨‍👩‍👧',n:'Família',d:'Presença total',c:'familia'},{h:'00:00',e:'🌙',n:'Dormir',d:'Recuperação',c:'sono'}],
+  6:[{h:'07:00',e:'☀️',n:'Acordar com calma',d:'Descanso',c:'sono'},{h:'08:30',e:'🍳',n:'Café reforçado',d:'Com a família',c:'alimenta'},{h:'10:00',e:'👨‍👩‍👧',n:'Família & lazer',d:'Recarrega',c:'familia'}],
+};
+
+const DEF_TREINO={
+  'Seg·Peito & Tríceps':[
+    {n:'Supino Reto',s:'4',r:'12',c:'60kg',e:'🏋️'},
+    {n:'Supino Inclinado',s:'3',r:'12',c:'50kg',e:'🏋️'},
+    {n:'Crucifixo',s:'3',r:'15',c:'14kg',e:'🏋️'},
+    {n:'Tríceps Pulley',s:'4',r:'12',c:'30kg',e:'💪'},
+    {n:'Tríceps Testa',s:'3',r:'12',c:'20kg',e:'💪'},
+  ],
+  'Ter·Costas & Bíceps':[
+    {n:'Puxada Frontal',s:'4',r:'12',c:'60kg',e:'🏋️'},
+    {n:'Remada Curvada',s:'4',r:'12',c:'50kg',e:'🏋️'},
+    {n:'Remada Unilateral',s:'3',r:'12',c:'24kg',e:'💪'},
+    {n:'Rosca Direta',s:'4',r:'12',c:'30kg',e:'💪'},
+    {n:'Rosca Martelo',s:'3',r:'12',c:'16kg',e:'💪'},
+  ],
+  'Qua·Pernas':[
+    {n:'Agachamento',s:'4',r:'12',c:'80kg',e:'🦵'},
+    {n:'Leg Press 45°',s:'4',r:'15',c:'120kg',e:'🦵'},
+    {n:'Cadeira Extensora',s:'3',r:'15',c:'50kg',e:'🦵'},
+    {n:'Mesa Flexora',s:'3',r:'15',c:'40kg',e:'🦵'},
+    {n:'Panturrilha',s:'4',r:'20',c:'60kg',e:'🦵'},
+  ],
+  'Qui·Ombros & Abdômen':[
+    {n:'Desenvolvimento',s:'4',r:'12',c:'40kg',e:'💪'},
+    {n:'Elevação Lateral',s:'3',r:'15',c:'12kg',e:'💪'},
+    {n:'Elevação Frontal',s:'3',r:'12',c:'10kg',e:'💪'},
+    {n:'Abdominal Crunch',s:'4',r:'20',c:'Peso corp.',e:'🔥'},
+    {n:'Prancha',s:'3',r:'60s',c:'—',e:'🔥'},
+  ],
+  'Sex·Full Body':[
+    {n:'Barra Fixa',s:'4',r:'10',c:'Peso corp.',e:'🏋️'},
+    {n:'Flexão de Braço',s:'3',r:'15',c:'Peso corp.',e:'💪'},
+    {n:'Agachamento Búlgaro',s:'3',r:'12',c:'16kg',e:'🦵'},
+    {n:'Kettlebell Swing',s:'4',r:'20',c:'24kg',e:'🔥'},
+    {n:'Burpee',s:'3',r:'10',c:'—',e:'🔥'},
+  ],
+};
+
+const DEF_TAREFAS=[
+  {n:'Revisar e-mails e priorizar respostas',pri:'alta',t:'08:50',done:false,tag:'Comunicação'},
+  {n:'Reunião de alinhamento com equipe',pri:'alta',t:'09:30',done:false,tag:'Reunião'},
+  {n:'Atualizar relatório semanal',pri:'media',t:'10:30',done:false,tag:'Relatório'},
+  {n:'Responder mensagens pendentes',pri:'media',t:'14:00',done:false,tag:'Comunicação'},
+  {n:'Planejar tarefas do dia seguinte',pri:'baixa',t:'17:30',done:false,tag:'Planejamento'},
+  {n:'Revisar processos da área',pri:'baixa',t:'16:00',done:false,tag:'Processos'},
+];
+
+const DEF_ESTUDO=[
+  {n:'Módulo 1 — Fundamentos',sub:'Conceitos básicos da área',pct:100,tempo:'2h',done:true},
+  {n:'Módulo 2 — Ferramentas',sub:'Domínio das ferramentas principais',pct:60,tempo:'2h',done:false},
+  {n:'Módulo 3 — Aplicação Prática',sub:'Projetos e exercícios reais',pct:20,tempo:'3h',done:false},
+  {n:'Módulo 4 — Avançado',sub:'Técnicas e estratégias avançadas',pct:0,tempo:'2h',done:false},
+  {n:'Revisão & Consolidação',sub:'Revisão geral e fixação',pct:0,tempo:'1h',done:false},
+];
+
+const DEF_LAZER=[
+  {n:'Filme em família',sub:'Escolher junto com a família',e:'🎬',cor:'var(--blue)',done:false},
+  {n:'Parque com as crianças',sub:'Atividade ao ar livre',e:'🌳',cor:'var(--green)',done:false},
+  {n:'Jogo de tabuleiro',sub:'Noite de jogos em família',e:'🃏',cor:'var(--purple)',done:false},
+  {n:'Churrasco',sub:'Final de semana em família',e:'🍖',cor:'var(--orange)',done:false},
+  {n:'Passeio livre',sub:'Sem roteiro, só curtir',e:'🚗',cor:'var(--amber)',done:false},
+];
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+const nowD=new Date();
+let sel=nowD.getDay();
+let editMode=false;
+let curMod='rotina';
+let taskFilter='todas';
+let selWorkoutDay=null;
+let editCtx={type:null,idx:null}; // context for modal
+let selEmoji='⏰',selCatV='trabalho',selPriV='media';
+
+function load(key,def){try{return JSON.parse(localStorage.getItem(key))||JSON.parse(JSON.stringify(def));}catch(e){return JSON.parse(JSON.stringify(def));}}
+function save(key,val){localStorage.setItem(key,JSON.stringify(val));}
+
+let scheds=load('pdr_scheds',DEF_ROTINA);
+let treinos=load('pdr_treinos',DEF_TREINO);
+let tarefas=load('pdr_tarefas',DEF_TAREFAS);
+let estudos=load('pdr_estudos',DEF_ESTUDO);
+let lazer=load('pdr_lazer',DEF_LAZER);
+let ck=load('pdr_ck',{});
+
+// ═══════════════════════════════════════
+// TIME
+// ═══════════════════════════════════════
+function toMin(t){const[h,m]=t.split(':').map(Number);return h*60+m;}
+function nowMin(){return nowD.getHours()*60+nowD.getMinutes();}
+function isNowB(sch,i){if(sch[i].h==='00:00')return false;const s=toMin(sch[i].h),e=i<sch.length-1?toMin(sch[i+1].h):1440;return nowMin()>=s&&nowMin()<e;}
+function isPastB(sch,i){if(sch[i].h==='00:00')return false;return nowMin()>=(i<sch.length-1?toMin(sch[i+1].h):1440);}
+
+// ═══════════════════════════════════════
+// HEADER
+// ═══════════════════════════════════════
+function renderHeader(){
+  const h=nowD.getHours();
+  document.getElementById('greeting').textContent=h<12?'☀️ Bom dia':h<18?'🔥 Boa tarde':'🌙 Boa noite';
+  document.getElementById('hdr-day').textContent=DAYS[sel];
+  document.getElementById('hdr-date').textContent=sel===nowD.getDay()?`${String(nowD.getDate()).padStart(2,'0')}/${String(nowD.getMonth()+1).padStart(2,'0')}`:DFULL[sel];
+}
+
+// ═══════════════════════════════════════
+// DAY PILLS
+// ═══════════════════════════════════════
+function renderDays(){
+  const w=document.getElementById('day-row');w.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.className='dp'+(i===sel?' on':'');
+    b.textContent=d+(i===nowD.getDay()?' ◆':'');
+    b.onclick=()=>{sel=i;renderRotina();};
+    w.appendChild(b);
+  });
+}
+
+// ═══════════════════════════════════════
+// ROTINA MODULE
+// ═══════════════════════════════════════
+function renderRotina(){
+  renderHeader();renderDays();
+  const wrap=document.getElementById('blocks');wrap.innerHTML='';
+  const sch=scheds[sel]||[];const isToday=sel===nowD.getDay();
+  let done=0,total=sch.filter(b=>b.h!=='00:00').length;
+  sch.forEach((b,i)=>{
+    const key='r_'+sel+'_'+i;const isDone=!!ck[key];
+    const nowB=isToday&&isNowB(sch,i);const pastB=isToday&&isPastB(sch,i);
+    if(isDone||(pastB&&b.h!=='00:00'))done++;
+    const outer=document.createElement('div');outer.className='blk-outer';outer.style.animationDelay=(i*20)+'ms';
+    const delBg=document.createElement('div');delBg.className='blk-del-bg';delBg.innerHTML='🗑';delBg.onclick=()=>delRotina(i);
+    const el=document.createElement('div');el.className=`blk-inner${isDone?' done-blk':''}${nowB?' is-now':''}`;
+    el.innerHTML=`<div class="blk-accent ac-${b.c}"></div><div class="blk-body"><div class="blk-time">${b.h}</div><div class="blk-icon">${b.e}</div><div class="blk-info"><div class="blk-name">${b.n}${nowB?'<span class="now-tag">Agora</span>':''}</div>${b.d?`<div class="blk-desc">${b.d}</div>`:''}</div><div class="blk-acts"><button class="blk-edit-btn">✏️</button><button class="blk-check${isDone?' done':''}">✓</button></div></div>`;
+    el.querySelector('.blk-check').onclick=e=>{e.stopPropagation();ck[key]=!ck[key];if(!ck[key])delete ck[key];save('pdr_ck',ck);renderRotina();};
+    el.querySelector('.blk-edit-btn').onclick=e=>{e.stopPropagation();openModal('rotina',i);};
+    let sx=0;
+    el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+    el.addEventListener('touchmove',e=>{const dx=sx-e.touches[0].clientX;if(dx>40)outer.classList.add('swiped');else if(dx<-10)outer.classList.remove('swiped');},{passive:true});
+    outer.appendChild(delBg);outer.appendChild(el);wrap.appendChild(outer);
+  });
+  let d2=0,t2=sch.filter(b=>b.h!=='00:00').length;
+  sch.forEach((b,i)=>{if(b.h==='00:00')return;const key='r_'+sel+'_'+i;if(ck[key]||(isToday&&isPastB(sch,i)))d2++;});
+  const pct=t2?Math.round((d2/t2)*100):0;
+  document.getElementById('bp-pct').textContent=pct+'%';
+  document.getElementById('bp-fill').style.width=pct+'%';
+}
+function delRotina(i){if(!confirm('Remover bloco?'))return;scheds[sel].splice(i,1);save('pdr_scheds',scheds);renderRotina();}
+
+// ═══════════════════════════════════════
+// TREINO MODULE
+// ═══════════════════════════════════════
+const workoutDayOrder=['Seg·Peito & Tríceps','Ter·Costas & Bíceps','Qua·Pernas','Qui·Ombros & Abdômen','Sex·Full Body'];
+
+function renderTreino(){
+  // day tabs
+  const tabs=document.getElementById('workout-day-tabs');tabs.innerHTML='';
+  if(!selWorkoutDay||!treinos[selWorkoutDay]) selWorkoutDay=Object.keys(treinos)[0];
+  Object.keys(treinos).forEach(k=>{
+    const b=document.createElement('button');
+    b.className='wdt'+(k===selWorkoutDay?' on':'');
+    b.textContent=k.split('·')[0];
+    b.onclick=()=>{selWorkoutDay=k;renderTreino();};
+    tabs.appendChild(b);
+  });
+  // header
+  const hw=document.getElementById('workout-header-wrap');
+  const parts=(selWorkoutDay||'').split('·');
+  hw.innerHTML=`<div class="workout-header"><div class="wh-label">${parts[0]||''}</div><div class="wh-name">${parts[1]||''}</div><div class="wh-sub">Ficha de treino editável</div></div>`;
+  // exercises
+  const list=document.getElementById('exercise-list');list.innerHTML='';
+  const exs=treinos[selWorkoutDay]||[];
+  let done=0;
+  exs.forEach((ex,i)=>{
+    const key='ex_'+selWorkoutDay+'_'+i;const isDone=!!ck[key];if(isDone)done++;
+    const card=document.createElement('div');card.className=`ex-card${isDone?' done-ex':''}`;card.style.animationDelay=(i*25)+'ms';
+    card.innerHTML=`<div class="ex-num">${i+1}</div><div class="ex-info"><div class="ex-name">${ex.n}</div><div class="ex-meta">${ex.s} séries × ${ex.r} reps · ${ex.c}</div></div><button class="ex-edit-btn">✏️</button><button class="ex-check${isDone?' done':''}">✓</button>`;
+    card.querySelector('.ex-check').onclick=e=>{e.stopPropagation();ck[key]=!ck[key];if(!ck[key])delete ck[key];save('pdr_ck',ck);renderTreino();};
+    card.querySelector('.ex-edit-btn').onclick=e=>{e.stopPropagation();openModal('exercicio',i);};
+    list.appendChild(card);
+  });
+  const pct=exs.length?Math.round((done/exs.length)*100):0;
+  document.getElementById('wp-count').textContent=`${done}/${exs.length}`;
+  document.getElementById('wp-bar').style.width=pct+'%';
+}
+function delExercicio(i){if(!confirm('Remover exercício?'))return;treinos[selWorkoutDay].splice(i,1);save('pdr_treinos',treinos);renderTreino();}
+
+// ═══════════════════════════════════════
+// TRABALHO MODULE
+// ═══════════════════════════════════════
+const priColors={alta:['var(--red)','#fff0f3'],media:['var(--amber)','#fffbeb'],baixa:['var(--green)','#ebfff7']};
+let curTaskFilter='todas';
+
+function renderTrabalho(){
+  let filtered=tarefas;
+  if(curTaskFilter==='alta') filtered=tarefas.filter(t=>t.pri==='alta');
+  else if(curTaskFilter==='media') filtered=tarefas.filter(t=>t.pri==='media');
+  else if(curTaskFilter==='baixa') filtered=tarefas.filter(t=>t.pri==='baixa');
+  else if(curTaskFilter==='pendente') filtered=tarefas.filter(t=>!t.done);
+
+  const done=tarefas.filter(t=>t.done).length;
+  const alta=tarefas.filter(t=>t.pri==='alta'&&!t.done).length;
+  document.getElementById('ts-total').textContent=tarefas.length;
+  document.getElementById('ts-done').textContent=done;
+  document.getElementById('ts-alta').textContent=alta;
+
+  const list=document.getElementById('task-list');list.innerHTML='';
+  const realIdxMap=[];
+  filtered.forEach(t=>{realIdxMap.push(tarefas.indexOf(t));});
+
+  filtered.forEach((t,fi)=>{
+    const ri=realIdxMap[fi];
+    const card=document.createElement('div');card.className=`task-card pri-${t.pri}${t.done?' done-task':''}`;card.style.animationDelay=(fi*20)+'ms';
+    const [pc,bg]=priColors[t.pri]||['var(--muted)','var(--bg)'];
+    card.innerHTML=`<button class="task-check${t.done?' done':''}">✓</button><div class="task-info"><div class="task-name">${t.n}</div><div class="task-meta"><span class="task-tag" style="background:${bg};color:${pc}">${t.tag||''}</span><span class="task-time">${t.t||''}</span></div></div><button class="task-edit-btn">✏️</button>`;
+    card.querySelector('.task-check').onclick=e=>{e.stopPropagation();tarefas[ri].done=!tarefas[ri].done;save('pdr_tarefas',tarefas);renderTrabalho();};
+    card.querySelector('.task-edit-btn').onclick=e=>{e.stopPropagation();openModal('tarefa',ri);};
+    list.appendChild(card);
+  });
+}
+function filterTasks(f,el){curTaskFilter=f;document.querySelectorAll('.tf').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderTrabalho();}
+function delTarefa(i){if(!confirm('Remover tarefa?'))return;tarefas.splice(i,1);save('pdr_tarefas',tarefas);closeModal();renderTrabalho();}
+
+// ═══════════════════════════════════════
+// ESTUDO MODULE
+// ═══════════════════════════════════════
+function renderEstudo(){
+  const list=document.getElementById('study-list');list.innerHTML='';
+  const total=estudos.length,done=estudos.filter(e=>e.done).length;
+  const pct=total?Math.round((done/total)*100):0;
+  const circ=157,offset=circ-circ*(pct/100);
+  document.getElementById('study-ring').style.strokeDashoffset=offset;
+  document.getElementById('study-ring-txt').textContent=pct+'%';
+  document.getElementById('study-sub').textContent=`${done} de ${total} módulos`;
+  estudos.forEach((e,i)=>{
+    const card=document.createElement('div');card.className=`study-card${e.done?' done-study':''}`;card.style.animationDelay=(i*20)+'ms';
+    card.innerHTML=`<div class="sc-top"><button class="sc-check${e.done?' done':''}">✓</button><div class="sc-info"><div class="sc-name">${e.n}</div><div class="sc-meta">${e.sub} · ${e.tempo}</div></div><button class="sc-edit-btn">✏️</button></div><div class="sc-bar-wrap"><div class="sc-bar-fill" style="width:${e.pct}%"></div></div>`;
+    card.querySelector('.sc-check').onclick=ev=>{ev.stopPropagation();estudos[i].done=!estudos[i].done;estudos[i].pct=estudos[i].done?100:estudos[i].pct;save('pdr_estudos',estudos);renderEstudo();};
+    card.querySelector('.sc-edit-btn').onclick=ev=>{ev.stopPropagation();openModal('estudo',i);};
+    list.appendChild(card);
+  });
+}
+function delEstudo(i){if(!confirm('Remover módulo?'))return;estudos.splice(i,1);save('pdr_estudos',estudos);closeModal();renderEstudo();}
+
+// ═══════════════════════════════════════
+// LAZER MODULE
+// ═══════════════════════════════════════
+function renderLazer(){
+  const list=document.getElementById('lazer-list');list.innerHTML='';
+  lazer.forEach((l,i)=>{
+    const card=document.createElement('div');card.className=`lazer-card${l.done?' done-lazer':''}`;card.style.animationDelay=(i*20)+'ms';
+    card.innerHTML=`<div class="lc-top"><div class="lc-icon" style="background:${l.cor}22">${l.e}</div><div class="lc-info"><div class="lc-name">${l.n}</div><div class="lc-meta">${l.sub}</div></div><button class="lc-edit-btn">✏️</button><button class="lc-check${l.done?' done':''}">✓</button></div>`;
+    card.querySelector('.lc-check').onclick=e=>{e.stopPropagation();lazer[i].done=!lazer[i].done;save('pdr_lazer',lazer);renderLazer();};
+    card.querySelector('.lc-edit-btn').onclick=e=>{e.stopPropagation();openModal('lazer',i);};
+    list.appendChild(card);
+  });
+}
+function delLazer(i){if(!confirm('Remover atividade?'))return;lazer.splice(i,1);save('pdr_lazer',lazer);closeModal();renderLazer();}
+
+// ═══════════════════════════════════════
+// MODULE SWITCH + EDIT MODE
+// ═══════════════════════════════════════
+function switchMod(mod){
+  curMod=mod;
+  document.querySelectorAll('.mod').forEach(m=>m.classList.remove('on'));
+  document.querySelectorAll('.mt').forEach(m=>m.classList.remove('on'));
+  document.getElementById('mod-'+mod).classList.add('on');
+  document.getElementById('mt-'+mod).classList.add('on');
+  // show/hide add btns
+  ['rotina','ex','task','study','lazer'].forEach(k=>{
+    const b=document.getElementById('add-'+k+'-btn');if(b)b.style.display='none';
+  });
+  if(editMode){
+    const map={rotina:'rotina',treino:'ex',trabalho:'task',estudo:'study',lazer:'lazer'};
+    const k=map[mod];
+    const b=document.getElementById('add-'+k+'-btn');if(b)b.style.display='flex';
+  }
+  if(mod==='treino')renderTreino();
+  else if(mod==='trabalho')renderTrabalho();
+  else if(mod==='estudo')renderEstudo();
+  else if(mod==='lazer')renderLazer();
+}
+
+function toggleEdit(){
+  editMode=!editMode;
+  const tog=document.getElementById('edit-toggle');
+  tog.textContent=editMode?'✅ Pronto':'✏️ Editar';
+  tog.classList.toggle('on',editMode);
+  document.getElementById('edit-bar').classList.toggle('show',editMode);
+
+  // Edit mode class on content areas
+  ['blocks','exercise-list','task-list','study-list','lazer-list'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.classList.toggle('is-editing',editMode);
+  });
+
+  // Show/hide add buttons
+  ['rotina','ex','task','study','lazer'].forEach(k=>{
+    const b=document.getElementById('add-'+k+'-btn');if(b)b.style.display='none';
+  });
+  if(editMode){
+    const map={rotina:'rotina',treino:'ex',trabalho:'task',estudo:'study',lazer:'lazer'};
+    const k=map[curMod];
+    const b=document.getElementById('add-'+k+'-btn');if(b)b.style.display='flex';
+  } else {
+    document.querySelectorAll('.blk-outer.swiped').forEach(o=>o.classList.remove('swiped'));
+  }
+}
+
+// ═══════════════════════════════════════
+// UNIVERSAL MODAL
+// ═══════════════════════════════════════
+function openModal(type,idx=null){
+  editCtx={type,idx};
+  const isEdit=idx!==null;
+  const overlay=document.getElementById('modal-overlay');
+  const title=document.getElementById('modal-title');
+  const body=document.getElementById('modal-body');
+  const btns=document.getElementById('modal-btns');
+
+  let html='';
+  if(type==='rotina'){
+    const b=isEdit?scheds[sel][idx]:null;
+    selEmoji=b?b.e:'⏰';selCatV=b?b.c:'trabalho';
+    title.innerHTML=isEdit?'Editar <em>Bloco</em>':'Novo <em>Bloco</em>';
+    html=`
+      <div class="field"><label>Horário</label><input type="time" id="f-time" value="${b?b.h:'07:00'}"></div>
+      <div class="field"><label>Nome</label><input type="text" id="f-name" value="${b?b.n:''}" placeholder="Ex: Meditação" maxlength="40"></div>
+      <div class="field"><label>Descrição</label><input type="text" id="f-desc" value="${b?b.d:''}" placeholder="Opcional"></div>
+      <div class="field"><label>Ícone</label><div class="emoji-grid" id="emoji-grid"></div></div>
+      <div class="field"><label>Categoria</label><div class="cat-grid">
+        <div class="cat-opt co-treino" data-cat="treino" onclick="selCat('treino')">🏋️ Treino</div>
+        <div class="cat-opt co-jiu" data-cat="jiu" onclick="selCat('jiu')">🥋 Jiu</div>
+        <div class="cat-opt co-trabalho" data-cat="trabalho" onclick="selCat('trabalho')">💼 Trab.</div>
+        <div class="cat-opt co-estudo" data-cat="estudo" onclick="selCat('estudo')">📚 Estudo</div>
+        <div class="cat-opt co-familia" data-cat="familia" onclick="selCat('familia')">👨‍👩‍👧 Família</div>
+        <div class="cat-opt co-alimenta" data-cat="alimenta" onclick="selCat('alimenta')">🍽 Refeição</div>
+        <div class="cat-opt co-sono" data-cat="sono" onclick="selCat('sono')">😴 Sono</div>
+        <div class="cat-opt co-lazer" data-cat="lazer" onclick="selCat('lazer')">🎮 Lazer</div>
+      </div></div>`;
+    btns.innerHTML=isEdit?`<button class="btn-delete" onclick="delRotina(${idx});closeModal()">Excluir</button><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`;
+  }
+  else if(type==='exercicio'){
+    const e=isEdit?(treinos[selWorkoutDay]||[])[idx]:null;
+    title.innerHTML=isEdit?'Editar <em>Exercício</em>':'Novo <em>Exercício</em>';
+    html=`
+      <div class="field"><label>Nome do exercício</label><input type="text" id="f-name" value="${e?e.n:''}" placeholder="Ex: Supino Reto"></div>
+      <div class="field-row">
+        <div class="field"><label>Séries</label><input type="text" id="f-series" value="${e?e.s:'4'}" placeholder="4"></div>
+        <div class="field"><label>Reps / Tempo</label><input type="text" id="f-reps" value="${e?e.r:'12'}" placeholder="12"></div>
+      </div>
+      <div class="field"><label>Carga / Observação</label><input type="text" id="f-carga" value="${e?e.c:''}" placeholder="Ex: 60kg ou Peso corporal"></div>`;
+    btns.innerHTML=isEdit?`<button class="btn-delete" onclick="delExercicio(${idx});closeModal()">Excluir</button><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`;
+  }
+  else if(type==='tarefa'){
+    const t=isEdit?tarefas[idx]:null;
+    selPriV=t?t.pri:'media';
+    title.innerHTML=isEdit?'Editar <em>Tarefa</em>':'Nova <em>Tarefa</em>';
+    html=`
+      <div class="field"><label>Tarefa</label><input type="text" id="f-name" value="${t?t.n:''}" placeholder="Descreva a tarefa"></div>
+      <div class="field-row">
+        <div class="field"><label>Horário</label><input type="time" id="f-time" value="${t?t.t:'09:00'}"></div>
+        <div class="field"><label>Categoria</label><input type="text" id="f-tag" value="${t?t.tag:''}" placeholder="Ex: Reunião"></div>
+      </div>
+      <div class="field"><label>Prioridade</label><div class="pri-grid">
+        <div class="pri-opt pri-alta" onclick="selPri('alta')">🔴 Urgente</div>
+        <div class="pri-opt pri-media" onclick="selPri('media')">🟡 Normal</div>
+        <div class="pri-opt pri-baixa" onclick="selPri('baixa')">🟢 Baixa</div>
+      </div></div>`;
+    btns.innerHTML=isEdit?`<button class="btn-delete" onclick="delTarefa(${idx})">Excluir</button><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`;
+  }
+  else if(type==='estudo'){
+    const e=isEdit?estudos[idx]:null;
+    title.innerHTML=isEdit?'Editar <em>Módulo</em>':'Novo <em>Módulo</em>';
+    html=`
+      <div class="field"><label>Nome do módulo</label><input type="text" id="f-name" value="${e?e.n:''}" placeholder="Ex: Módulo 5 — Avançado"></div>
+      <div class="field"><label>Descrição</label><input type="text" id="f-desc" value="${e?e.sub:''}" placeholder="O que será estudado?"></div>
+      <div class="field-row">
+        <div class="field"><label>Tempo estimado</label><input type="text" id="f-tempo" value="${e?e.tempo:'2h'}" placeholder="2h"></div>
+        <div class="field"><label>Progresso %</label><input type="number" id="f-pct" value="${e?e.pct:0}" min="0" max="100" placeholder="0"></div>
+      </div>`;
+    btns.innerHTML=isEdit?`<button class="btn-delete" onclick="delEstudo(${idx})">Excluir</button><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`;
+  }
+  else if(type==='lazer'){
+    const l=isEdit?lazer[idx]:null;
+    selEmoji=l?l.e:'🎮';
+    title.innerHTML=isEdit?'Editar <em>Atividade</em>':'Nova <em>Atividade</em>';
+    html=`
+      <div class="field"><label>Nome</label><input type="text" id="f-name" value="${l?l.n:''}" placeholder="Ex: Cinema em família"></div>
+      <div class="field"><label>Descrição</label><input type="text" id="f-desc" value="${l?l.sub:''}" placeholder="Detalhe da atividade"></div>
+      <div class="field"><label>Ícone</label><div class="emoji-grid" id="emoji-grid"></div></div>`;
+    btns.innerHTML=isEdit?`<button class="btn-delete" onclick="delLazer(${idx})">Excluir</button><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`:`<button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-save" onclick="saveModal()">Salvar</button>`;
+  }
+
+  body.innerHTML=html;
+
+  // Build emoji grid if needed
+  if(type==='rotina'||type==='lazer'){
+    const eg=document.getElementById('emoji-grid');
+    if(eg){
+      EMOJIS.forEach(em=>{
+        const d=document.createElement('div');d.className='emoji-opt'+(em===selEmoji?' sel':'');d.textContent=em;
+        d.onclick=()=>{selEmoji=em;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');};
+        eg.appendChild(d);
+      });
+    }
+  }
+
+  // Set cat/pri selectors
+  if(type==='rotina'){
+    document.querySelectorAll('.cat-opt').forEach(o=>o.classList.remove('sel'));
+    const co=document.querySelector(`[data-cat="${selCatV}"]`);if(co)co.classList.add('sel');
+  }
+  if(type==='tarefa'){
+    document.querySelectorAll('.pri-opt').forEach(o=>o.classList.remove('sel'));
+    const po=document.querySelector('.pri-'+selPriV);if(po)po.classList.add('sel');
+  }
+
+  overlay.classList.add('open');
+  setTimeout(()=>{const fn=document.getElementById('f-name');if(fn)fn.focus();},300);
+}
+
+function selCat(cat){selCatV=cat;document.querySelectorAll('.cat-opt').forEach(o=>o.classList.remove('sel'));const co=document.querySelector(`[data-cat="${cat}"]`);if(co)co.classList.add('sel');}
+function selPri(pri){selPriV=pri;document.querySelectorAll('.pri-opt').forEach(o=>o.classList.remove('sel'));const po=document.querySelector('.pri-'+pri);if(po)po.classList.add('sel');}
+
+function saveModal(){
+  const {type,idx}=editCtx;const isEdit=idx!==null;
+  const fn=document.getElementById('f-name');if(!fn||!fn.value.trim()){if(fn)fn.focus();return;}
+  const name=fn.value.trim();
+
+  if(type==='rotina'){
+    const block={h:document.getElementById('f-time').value,e:selEmoji,n:name,d:(document.getElementById('f-desc')||{}).value||'',c:selCatV};
+    if(isEdit)scheds[sel][idx]=block;
+    else{scheds[sel].push(block);scheds[sel].sort((a,b)=>{if(a.h==='00:00')return 1;if(b.h==='00:00')return -1;return toMin(a.h)-toMin(b.h);});}
+    save('pdr_scheds',scheds);closeModal();renderRotina();
+  }
+  else if(type==='exercicio'){
+    const ex={n:name,s:(document.getElementById('f-series')||{}).value||'4',r:(document.getElementById('f-reps')||{}).value||'12',c:(document.getElementById('f-carga')||{}).value||'—',e:'🏋️'};
+    if(!treinos[selWorkoutDay])treinos[selWorkoutDay]=[];
+    if(isEdit)treinos[selWorkoutDay][idx]=ex;else treinos[selWorkoutDay].push(ex);
+    save('pdr_treinos',treinos);closeModal();renderTreino();
+  }
+  else if(type==='tarefa'){
+    const t={n:name,pri:selPriV,t:(document.getElementById('f-time')||{}).value||'',tag:(document.getElementById('f-tag')||{}).value||'',done:isEdit?tarefas[idx].done:false};
+    if(isEdit)tarefas[idx]=t;else tarefas.push(t);
+    save('pdr_tarefas',tarefas);closeModal();renderTrabalho();
+  }
+  else if(type==='estudo'){
+    const pctVal=parseInt((document.getElementById('f-pct')||{}).value||0);
+    const e={n:name,sub:(document.getElementById('f-desc')||{}).value||'',tempo:(document.getElementById('f-tempo')||{}).value||'2h',pct:Math.min(100,Math.max(0,pctVal)),done:pctVal>=100};
+    if(isEdit)estudos[idx]=e;else estudos.push(e);
+    save('pdr_estudos',estudos);closeModal();renderEstudo();
+  }
+  else if(type==='lazer'){
+    const l={n:name,sub:(document.getElementById('f-desc')||{}).value||'',e:selEmoji,cor:'var(--green)',done:isEdit?lazer[idx].done:false};
+    if(isEdit)lazer[idx]=l;else lazer.push(l);
+    save('pdr_lazer',lazer);closeModal();renderLazer();
+  }
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');editCtx={type:null,idx:null};}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+// ═══════════════════════════════════════
+// SEMANA / METAS
+// ═══════════════════════════════════════
+function renderWeek(){
+  const w=document.getElementById('week-cols');w.innerHTML='';
+  const td=nowD.getDay(),tdate=nowD.getDate();
+  for(let d=0;d<7;d++){
+    const dt=new Date(nowD);dt.setDate(tdate+(d-td));
+    const sch=scheds[d]||[];
+    const cats=[...new Set(sch.map(b=>b.c))];
+    const col=document.createElement('div');col.className='wk-col'+(d===td?' wk-today':'');
+    col.innerHTML=`<div class="wk-n">${DAYS[d]}</div><div class="wk-d">${dt.getDate()}</div><div class="wk-dots">${cats.slice(0,5).map(c=>`<div class="wk-dot" style="background:${catColors[c]||'#ccc'}"></div>`).join('')}</div>`;
+    w.appendChild(col);
+  }
+}
+
+function renderQuote(){const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];document.getElementById('q-text').textContent=q.t;document.getElementById('q-auth').textContent='— '+q.a;}
+
+// ═══════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('scr-'+name).classList.add('on');
+  document.getElementById('nb-'+name).classList.add('on');
+  if(name==='semana')renderWeek();
+  if(name==='metas')renderQuote();
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+renderRotina();renderWeek();
+</script>
+</body>
+</html>
