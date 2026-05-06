@@ -1,19 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Minha Rotina</title>
-<meta property="og:title" content="Minha Rotina">
-<meta property="og:description" content="Meu app de rotina diária">
-<meta property="og:image" content="https://relava2025.github.io/minharotina/mr-logo.png">
-<meta property="og:url" content="https://relava2025.github.io/minharotina/">
-<meta property="og:type" content="website">
-<link rel="icon" type="image/svg+xml" href="mr-logo.svg">
-<link rel="apple-touch-icon" href="mr-logo.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Minha Rotina">
-<meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,600;0,700;0,900;1,900&family=Barlow+Condensed:wght@500;700;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -506,40 +497,64 @@ const DEF_ROTINA={
 };
 
 const DEF_TREINO={
-  'Seg·Peito & Tríceps':[
-    {n:'Supino Reto',s:'4',r:'12',c:'60kg',e:'🏋️'},
-    {n:'Supino Inclinado',s:'3',r:'12',c:'50kg',e:'🏋️'},
-    {n:'Crucifixo',s:'3',r:'15',c:'14kg',e:'🏋️'},
-    {n:'Tríceps Pulley',s:'4',r:'12',c:'30kg',e:'💪'},
-    {n:'Tríceps Testa',s:'3',r:'12',c:'20kg',e:'💪'},
+  'A·Inferiores + Core':[
+    // PRÉ-ATIVAÇÃO
+    {n:'⚡ PRÉ-ATIVAÇÃO',s:'—',r:'—',c:'Essencial — não pule!',e:'🔆',sec:true},
+    {n:'Ponte de glúteo com pausa',s:'3',r:'15',c:'2s de contração',e:'🍑'},
+    {n:'Abdução com elástico',s:'3',r:'20',c:'Curto e controlado',e:'🦵'},
+    {n:'Dead bug',s:'3',r:'12',c:'Foco no core',e:'🔥'},
+    // PRINCIPAL
+    {n:'💪 PRINCIPAL',s:'—',r:'—',c:'Foco: controle + postura',e:'🏋️',sec:true},
+    {n:'Agachamento livre',s:'4',r:'8-10',c:'Controle + postura neutra',e:'🦵'},
+    {n:'Leg press (pé médio/alto)',s:'3',r:'10-12',c:'Enfatizar posterior + glúteo',e:'🦵'},
+    {n:'Afundo caminhando',s:'3',r:'10',c:'Cada perna',e:'🦵'},
+    {n:'Mesa flexora',s:'3',r:'12',c:'+ drop na última',e:'🦵'},
+    {n:'Elevação pélvica (hip thrust)',s:'4',r:'10',c:'2s de contração',e:'🍑'},
+    // CORE
+    {n:'🔥 CORE',s:'—',r:'—',c:'Finalizar com core',e:'💪',sec:true},
+    {n:'Prancha',s:'3',r:'30-40s',c:'Respiração controlada',e:'🔥'},
+    {n:'Abdominal infra controlado',s:'3',r:'12',c:'Movimento lento',e:'🔥'},
   ],
-  'Ter·Costas & Bíceps':[
-    {n:'Puxada Frontal',s:'4',r:'12',c:'60kg',e:'🏋️'},
-    {n:'Remada Curvada',s:'4',r:'12',c:'50kg',e:'🏋️'},
-    {n:'Remada Unilateral',s:'3',r:'12',c:'24kg',e:'💪'},
-    {n:'Rosca Direta',s:'4',r:'12',c:'30kg',e:'💪'},
-    {n:'Rosca Martelo',s:'3',r:'12',c:'16kg',e:'💪'},
+  'B·Superiores + Correção':[
+    // PRÉ-ATIVAÇÃO
+    {n:'⚡ PRÉ-ATIVAÇÃO',s:'—',r:'—',c:'Ativar escapular',e:'🔆',sec:true},
+    {n:'Face pull leve',s:'3',r:'15',c:'Foco na retração',e:'💪'},
+    {n:'Rotação externa com elástico',s:'3',r:'15',c:'Controle total',e:'💪'},
+    {n:'Scapular push-up',s:'2',r:'12',c:'Ativar serrátil',e:'💪'},
+    // PRINCIPAL
+    {n:'💪 PRINCIPAL',s:'—',r:'—',c:'Empurrar + postura',e:'🏋️',sec:true},
+    {n:'Supino reto',s:'4',r:'8-10',c:'Controle na descida',e:'🏋️'},
+    {n:'Supino inclinado halter',s:'3',r:'10',c:'Amplitude total',e:'🏋️'},
+    {n:'Desenvolvimento halter',s:'3',r:'10',c:'Não travar cotovelo',e:'💪'},
+    {n:'Elevação lateral',s:'3',r:'12',c:'+ drop na última',e:'💪'},
+    // CORRETIVO
+    {n:'🎯 CORRETIVO (obrigatório)',s:'—',r:'—',c:'Não pule esta parte',e:'⚡',sec:true},
+    {n:'Face pull pesado',s:'3',r:'12',c:'Retração + depressão',e:'💪'},
+    {n:'Crucifixo inverso',s:'3',r:'12',c:'Foco no romboide',e:'💪'},
+    // TRÍCEPS
+    {n:'💥 TRÍCEPS',s:'—',r:'—',c:'Finalizar',e:'🔥',sec:true},
+    {n:'Tríceps corda',s:'3',r:'12',c:'Cotovelo fixo',e:'💪'},
+    {n:'Tríceps francês',s:'3',r:'10',c:'Controle total',e:'💪'},
   ],
-  'Qua·Pernas':[
-    {n:'Agachamento',s:'4',r:'12',c:'80kg',e:'🦵'},
-    {n:'Leg Press 45°',s:'4',r:'15',c:'120kg',e:'🦵'},
-    {n:'Cadeira Extensora',s:'3',r:'15',c:'50kg',e:'🦵'},
-    {n:'Mesa Flexora',s:'3',r:'15',c:'40kg',e:'🦵'},
-    {n:'Panturrilha',s:'4',r:'20',c:'60kg',e:'🦵'},
-  ],
-  'Qui·Ombros & Abdômen':[
-    {n:'Desenvolvimento',s:'4',r:'12',c:'40kg',e:'💪'},
-    {n:'Elevação Lateral',s:'3',r:'15',c:'12kg',e:'💪'},
-    {n:'Elevação Frontal',s:'3',r:'12',c:'10kg',e:'💪'},
-    {n:'Abdominal Crunch',s:'4',r:'20',c:'Peso corp.',e:'🔥'},
-    {n:'Prancha',s:'3',r:'60s',c:'—',e:'🔥'},
-  ],
-  'Sex·Full Body':[
-    {n:'Barra Fixa',s:'4',r:'10',c:'Peso corp.',e:'🏋️'},
-    {n:'Flexão de Braço',s:'3',r:'15',c:'Peso corp.',e:'💪'},
-    {n:'Agachamento Búlgaro',s:'3',r:'12',c:'16kg',e:'🦵'},
-    {n:'Kettlebell Swing',s:'4',r:'20',c:'24kg',e:'🔥'},
-    {n:'Burpee',s:'3',r:'10',c:'—',e:'🔥'},
+  'C·Posterior + Costas':[
+    // PRÉ-ATIVAÇÃO
+    {n:'⚡ PRÉ-ATIVAÇÃO',s:'—',r:'—',c:'Ativar cadeia posterior',e:'🔆',sec:true},
+    {n:'Good morning ou stiff leve',s:'2',r:'15',c:'Aquecimento',e:'🦵'},
+    {n:'Glute bridge',s:'2',r:'15',c:'Ativar glúteo',e:'🍑'},
+    {n:'Mobilidade de quadril',s:'2',r:'10',c:'Cada lado',e:'🧘'},
+    // PRINCIPAL
+    {n:'💪 PRINCIPAL',s:'—',r:'—',c:'Prioridade total',e:'🏋️',sec:true},
+    {n:'Levantamento terra (moderado)',s:'4',r:'6-8',c:'Técnica impecável',e:'🏋️'},
+    {n:'Puxada na frente (pegada aberta)',s:'4',r:'10',c:'Amplitude completa',e:'🏋️'},
+    {n:'Remada curvada',s:'3',r:'10',c:'Cotovelo para trás',e:'🏋️'},
+    {n:'Remada unilateral',s:'3',r:'10',c:'Cada lado',e:'💪'},
+    // FOCO GLÚTEO
+    {n:'🍑 FOCO GLÚTEO + POSTERIOR',s:'—',r:'—',c:'Prioridade estrutural',e:'🔥',sec:true},
+    {n:'Stiff',s:'3',r:'10',c:'Foco no alongamento',e:'🦵'},
+    {n:'Mesa flexora',s:'3',r:'12',c:'+ drop na última',e:'🦵'},
+    // FINALIZAR
+    {n:'🎯 FINALIZAR',s:'—',r:'—',c:'Bi-set obrigatório',e:'⚡',sec:true},
+    {n:'Pulldown + Face pull (bi-set)',s:'3',r:'12',c:'Sem descanso entre os dois',e:'🏋️'},
   ],
 };
 
@@ -672,21 +687,34 @@ function renderTreino(){
   // header
   const hw=document.getElementById('workout-header-wrap');
   const parts=(selWorkoutDay||'').split('·');
-  hw.innerHTML=`<div class="workout-header"><div class="wh-label">${parts[0]||''}</div><div class="wh-name">${parts[1]||''}</div><div class="wh-sub">Ficha de treino editável</div></div>`;
+  const wColors={'A':'var(--orange)','B':'var(--blue)','C':'var(--red)'};
+  const wColor=wColors[parts[0]]||'var(--orange)';
+  hw.innerHTML=`<div class="workout-header" style="background:${wColor}"><div class="wh-label">Treino ${parts[0]||''} · Reis Team</div><div class="wh-name">${parts[1]||''}</div><div class="wh-sub">Ficha oficial · 3× semana</div></div>`;
   // exercises
   const list=document.getElementById('exercise-list');list.innerHTML='';
   const exs=treinos[selWorkoutDay]||[];
-  let done=0;
+  let done=0,realCount=0,exNum=0;
+  // count real exercises (not section headers)
+  exs.forEach(ex=>{if(!ex.sec)realCount++;});
   exs.forEach((ex,i)=>{
+    if(ex.sec){
+      // Section header
+      const sec=document.createElement('div');
+      sec.style.cssText='margin:16px 0 8px;font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;';
+      sec.innerHTML=`<span>${ex.n}</span><span style="flex:1;height:1px;background:var(--border);display:block"></span><span style="font-size:11px">${ex.c}</span>`;
+      list.appendChild(sec);
+      return;
+    }
+    exNum++;
     const key='ex_'+selWorkoutDay+'_'+i;const isDone=!!ck[key];if(isDone)done++;
-    const card=document.createElement('div');card.className=`ex-card${isDone?' done-ex':''}`;card.style.animationDelay=(i*25)+'ms';
-    card.innerHTML=`<div class="ex-num">${i+1}</div><div class="ex-info"><div class="ex-name">${ex.n}</div><div class="ex-meta">${ex.s} séries × ${ex.r} reps · ${ex.c}</div></div><button class="ex-edit-btn">✏️</button><button class="ex-check${isDone?' done':''}">✓</button>`;
+    const card=document.createElement('div');card.className=`ex-card${isDone?' done-ex':''}`;card.style.animationDelay=(i*20)+'ms';
+    card.innerHTML=`<div class="ex-num">${exNum}</div><div class="ex-info"><div class="ex-name">${ex.n}</div><div class="ex-meta">${ex.s} séries × ${ex.r} reps · ${ex.c}</div></div><button class="ex-edit-btn">✏️</button><button class="ex-check${isDone?' done':''}">✓</button>`;
     card.querySelector('.ex-check').onclick=e=>{e.stopPropagation();ck[key]=!ck[key];if(!ck[key])delete ck[key];save('pdr_ck',ck);renderTreino();};
     card.querySelector('.ex-edit-btn').onclick=e=>{e.stopPropagation();openModal('exercicio',i);};
     list.appendChild(card);
   });
-  const pct=exs.length?Math.round((done/exs.length)*100):0;
-  document.getElementById('wp-count').textContent=`${done}/${exs.length}`;
+  const pct=realCount?Math.round((done/realCount)*100):0;
+  document.getElementById('wp-count').textContent=`${done}/${realCount}`;
   document.getElementById('wp-bar').style.width=pct+'%';
 }
 function delExercicio(i){if(!confirm('Remover exercício?'))return;treinos[selWorkoutDay].splice(i,1);save('pdr_treinos',treinos);renderTreino();}
